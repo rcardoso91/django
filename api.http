@@ -1,0 +1,52 @@
+###
+# Login
+POST http://localhost:8000/api/session/
+Content-Type: application/json
+
+{
+  "email": "admin@teste.com.br",
+  "password": "admin"
+}
+
+###
+# Logout
+DELETE http://localhost:8000/api/session/
+
+###
+
+# Cria estudante
+POST http://localhost:8000/api/aluno/
+Content-Type: application/json
+
+{
+  "nome": "Rodrigo Cardoso",
+  "data_nascimento": "1991-05-13",
+  "endereco_rua": "Rua dos testes",
+  "endereco_numero": 123
+}
+
+###
+# Lista estudantes
+GET http://localhost:8000/api/aluno/?nome=ma
+
+###
+# Exibe estudante 
+GET http://localhost:8000/api/aluno/1
+
+###
+# Atualiza estudante
+PUT http://localhost:8000/api/aluno/1
+Content-Type: application/json
+
+{
+  "nome": "Rodrigo Cardoso",
+  "data_nascimento": "1991-05-13",
+  "endereco_rua": "Rua atualiza Rua",
+  "endereco_numero": 555
+}
+
+###
+# Deleta estudante
+DELETE http://localhost:8000/api/aluno/1
+
+

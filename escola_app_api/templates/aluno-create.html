@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alunos</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+    }
+
+    .error-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .error-message {
+      font-size: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .back-btn {
+      margin-top: 20px;
+      background: none;
+      color: rgb(53, 240, 53);
+      border: 1px solid rgb(53, 240, 53);
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: 150ms ease-in;
+      cursor: pointer;
+    }
+
+    .back-btn:hover {
+      background: rgb(51, 160, 51);
+      color: #fff;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      border-radius: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #111;
+      border-radius: 10px;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+    }
+
+    form {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #333;
+      border-radius: 8px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    input[type="date"] {
+      width: calc(100% - 16px);
+      padding: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #444;
+      background-color: #222;
+      color: #fff;
+      border-radius: 4px;
+    }
+
+    .flex-container {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .flex-item {
+      width: calc(50% - 8px);
+    }
+
+    button {
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      border-radius: 4px;
+      transition: 150ms ease-in;
+      background-color: #555;
+      color: #fff;
+    }
+
+    .add-btn {
+      width: 100%;
+    }
+
+    button:hover {
+      filter: brightness(1.2);
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+
+</head>
+
+<body>
+  <form id="alunoForm">
+    <div class="header-container">
+      <h1>Criar Aluno</h1>
+      <button type="button" onclick="redirectToHome()">Home</button>
+    </div>
+
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" required />
+    <label for="data_nascimento">Data de Nascimento:</label>
+    <input type="date" id="data_nascimento" name="data_nascimento" required />
+    <div class="flex-container">
+      <div class="flex-item">
+        <label for="endereco_rua">Rua:</label>
+        <input type="text" id="endereco_rua" name="endereco_rua" required />
+      </div>
+      <div class="flex-item">
+        <label for="endereco_numero">Número:</label>
+        <input type="text" id="endereco_numero" name="endereco_numero" required />
+      </div>
+    </div>
+    <button type="submit" class="add-btn">Enviar</button>
+  </form>
+
+  <script>
+    function redirectToHome() {
+      window.location.href = "http://localhost:8000/api/aluno/app/home";
+    }
+
+    document.getElementById('alunoForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+
+      const data = {
+        nome: formData.get("nome"),
+        data_nascimento: formataData(formData.get("data_nascimento")),
+        endereco_rua: formData.get("endereco_rua"),
+        endereco_numero: formData.get("endereco_numero"),
+      };
+
+      if (data.nome.length < 3) {
+        alert("Nome deve ter no mínimo 3 caracteres");
+        return;
+      }
+
+      if (!data.data_nascimento) {
+        alert("A data de nascimento é obrigatória");
+        return;
+      }
+
+      if (data.endereco_rua.length < 3) {
+        alert("O nome da rua deve ter no mínimo 3 caracteres");
+        return;
+      }
+
+      const regex = /^\d+$/; // Apenas dígitos de 0 a 9
+      if (!regex.test(data.endereco_numero)) {
+        alert("O número do endereço deve ser um inteiro");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:8000/api/aluno/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+          throw new Error("Algo deu errado, tente novamente mais tarde!");
+        }
+
+        redirectToHome();
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    function formataData(data) {
+      const partes = data.split('-');
+      return `${partes[0]}-${partes[1].padStart(2, '0')}-${partes[2].padStart(2, '0')}`;
+    }
+  </script>
+</body>
+
+</html>

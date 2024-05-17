@@ -1,0 +1,17 @@
+// DJANGO
+django-admin startproject mysite [project-nome]
+python manage.py startapp [app-nome]
+python manage.py makemigrations [app_nome]
+python manage.py sqlmigrate [app-nome] [migration-nome]
+python manage.py migrate
+python manage.py test
+python manage.py runserver
+
+// ENV
+python -m venv ./env
+source ./env/Scripts/activate
+pip freeze > requirements.txt
+pip install -r requirements.txt
+
+// DOCKER 
+docker compose up -d --build

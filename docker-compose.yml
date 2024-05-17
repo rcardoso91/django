@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  django-app:
+    build:
+      context: .
+    container_name: django-app
+    environment:
+      - ADMIN_EMAIL=admin@teste.com.br
+      - ADMIN_PASSWORD=admin
+      - JWT_SECRET=default
+    ports:
+      - 8000:8000
+    networks:
+      - network-django
+    volumes:
+      - db-volume:/usr/src/app/db
+
+networks:
+  network-django:
+    driver: bridge
+
+volumes:
+  db-volume:

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alunos</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body {
+        background-color: #111;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        padding: 30px;
+      }
+
+      .btn-logout {
+        margin-bottom: 20px;
+        background: none;
+        color: rgb(53, 240, 53);
+        border: 1px solid rgb(53, 240, 53);
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: 150ms ease-in;
+        cursor: pointer;
+      }
+
+      .btn-logout:hover {
+        background: rgb(51, 160, 51);
+        color: #fff;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        margin: 0;
+      }
+
+      .add-btn {
+        background-color: #555;
+        color: #fff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .add-btn:hover {
+        background-color: #333;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        border: 1px solid #444;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #333;
+      }
+
+      tr:nth-child(even) {
+        background-color: #222;
+      }
+
+      .edit-btn,
+      .delete-btn {
+        background-color: #555;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .edit-btn:hover,
+      .delete-btn:hover {
+        background-color: #333;
+      }
+
+      .empty-table {
+        background-color: #222;
+        color: #888;
+      }
+
+      .empty-table td {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="btn-logout" onclick="handleLogout()">Sair</button>
+    <header>
+      <h1>Alunos</h1>
+      <button class="add-btn" onclick="handleAdd()">Adicionar</button>
+    </header>
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nome</th>
+          <th>Data de Nascimento</th>
+          <th>Data de Cadastro</th>
+          <th>Endereço</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if alunos %} {% for aluno in alunos %}
+        <tr>
+          <td>{{ aluno.codigo_aluno }}</td>
+          <td>{{ aluno.nome }}</td>
+          <td>{{ aluno.data_nascimento }}</td>
+          <td>{{ aluno.criado_em }}</td>
+          <td>{{ aluno.endereco_rua }}, {{ aluno.endereco_numero }}</td>
+          <td>
+            <button
+              class="edit-btn"
+              onclick="handleEdit('{{ aluno.codigo_aluno }}')"
+            >
+              Editar
+            </button>
+
+            <button
+              class="delete-btn"
+              onclick="handleDelete('{{ aluno.codigo_aluno }}', '{{ aluno.nome }}')"
+            >
+              Deletar
+            </button>
+          </td>
+        </tr>
+        {% endfor %} {% else %}
+        <tr class="empty-table">
+          <td colspan="6">Nenhum estudante cadastrado até o momento. 😓</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+    <script>
+      async function handleLogout() {
+        const response = await fetch(`http://localhost:8000/api/session/`, {
+          method: "DELETE",
+        });
+        if (response.status < 200 || response.status >= 300) {
+          alert("Algo deu errado, tente novamente mais tarde!");
+          return;
+        }
+        location.reload();
+      }
+
+      function redirectTo(pathname) {
+        const url = new URL(location.href);
+        url.pathname = pathname;
+        location = url.toString();
+      }
+
+      function handleAdd() {
+        redirectTo("/api/aluno/app/create");
+      }
+
+      function handleEdit(codigo_aluno) {
+        redirectTo(`/api/aluno/app/edit/${codigo_aluno}`);
+      }
+
+       async function handleDelete(codigo_aluno, nome) {
+            if (!confirm(`Confirme para excluir o aluno ${nome}`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8000/api/aluno/${codigo_aluno}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({}),
+                });
+
+                if (response.status < 200 || response.status >= 300) {
+                    alert("Algo deu errado, tente novamente mais tarde!");
+                    return;
+                }
+                location.reload();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+    </script>
+</body>
+</html>
